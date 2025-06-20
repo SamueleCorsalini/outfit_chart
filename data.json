@@ -1,0 +1,48 @@
+{
+  "daily_top3": {
+    "2025-06-09": [
+      "Georgia",
+      "Francesco",
+      "Cosimo"
+    ],
+    "2025-06-10": [
+      "Daniele S. ",
+      "Georgia",
+      "Ivan"
+    ],
+    "2025-06-11": [
+      "Roberta",
+      "Samuele C.",
+      "Cosimo"
+    ],
+    "2025-06-18": [
+      "Stefano S.",
+      "Martina",
+      "Georgia"
+    ],
+    "2025-06-16": [
+      "Cecilia S.",
+      "Roberta",
+      "Christian"
+    ],
+    "2025-06-17": [
+      "Roberta",
+      "Chiara B.",
+      "Flavio"
+    ]
+  },
+  "extra_points": [
+    {
+      "name": "Francesco",
+      "points": 1,
+      "reason": "Si lamenta sempre",
+      "date": "2025-06-18"
+    },
+    {
+      "name": "Simone",
+      "points": 1,
+      "reason": "Maglietta MOMA",
+      "date": "2025-06-18"
+    }
+  ]
+}
