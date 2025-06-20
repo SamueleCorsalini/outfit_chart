@@ -54,17 +54,20 @@ def add_extra_points(name, points, reason):
 def calculate_global_ranking(data):
     scores = defaultdict(int)
 
-    for date, top3 in data["daily_top3"].items():
+    # Process daily_top3 rankings
+    for date, top3 in data.get("daily_top3", {}).items():
         for i, name in enumerate(top3):
             scores[name] += POINTS[i]
 
-    for entry in data:
-        if "name" in entry and "points" in entry:
+    # Process manually added extra points
+    for entry in data.get("extra_points", []):
+        if isinstance(entry, dict) and "name" in entry and "points" in entry:
             scores[entry["name"]] += entry["points"]
         else:
             st.warning(f"Skipping malformed entry: {entry}")
 
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+
 
 def show_top3(date_str, data):
     st.subheader(f"👔 Top 3 - {date_str}")
