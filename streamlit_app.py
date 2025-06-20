@@ -61,12 +61,19 @@ def calculate_global_ranking(data):
 
     # Process manually added extra points
     for entry in data.get("extra_points", []):
-        if isinstance(entry, dict) and "name" in entry and "points" in entry:
-            scores[entry["name"]] += entry["points"]
+        if isinstance(entry, dict):
+            # Try both capitalized and lowercase keys
+            name = entry.get("name") or entry.get("Name")
+            points = entry.get("points") or entry.get("Points")
+            if name is not None and points is not None:
+                scores[name] += points
+            else:
+                st.warning(f"Skipping malformed entry: {entry}")
         else:
             st.warning(f"Skipping malformed entry: {entry}")
 
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+
 
 
 def show_top3(date_str, data):
