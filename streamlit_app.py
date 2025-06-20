@@ -20,8 +20,8 @@ def get_gsheet_client():
 
 def load_data():
     client = get_gsheet_client()
-    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("Top3")
-    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("ExtraPoints")
+    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("daily_top3")
+    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("extra_points")
 
     top3_data = sheet_top3.get_all_records()
     extra_data = sheet_extra.get_all_records()
@@ -37,12 +37,12 @@ def load_data():
 
 def add_daily_top3(date_str, top3_names):
     client = get_gsheet_client()
-    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("Top3")
+    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("daily_top3")
     sheet_top3.append_row([date_str] + top3_names)
 
 def add_extra_points(name, points, reason):
     client = get_gsheet_client()
-    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("ExtraPoints")
+    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("extra_points")
     sheet_extra.append_row([
         datetime.today().strftime("%Y-%m-%d"),
         name,
