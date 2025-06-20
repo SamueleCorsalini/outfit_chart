@@ -13,7 +13,7 @@ POINTS = [25, 20, 15]
 
 # Autenticazione Google Sheets
 def get_gsheet_client():
-    creds_dict = json.loads(st.secrets["GOOGLE_SHEET_CREDS"])
+    creds_dict = st.secrets["GOOGLE_SHEET_CREDS"]
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     return gspread.authorize(creds)
