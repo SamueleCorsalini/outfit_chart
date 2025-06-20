@@ -1,38 +1,55 @@
+import gspread
 import streamlit as st
-import json
-import os
+from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime, timedelta
 from collections import defaultdict
+import json
+import os
 
 DATA_FILE = "data.json"
 ADMIN_PASSWORD = "capibara"
 
 POINTS = [25, 20, 15]
 
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    return {"daily_top3": {}, "extra_points": []}
+# Autenticazione Google Sheets
+def get_gsheet_client():
+    creds_dict = json.loads(st.secrets["GOOGLE_SHEET_CREDS"])
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    return gspread.authorize(creds)
 
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+def load_data():
+    client = get_gsheet_client()
+    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("Top3")
+    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("ExtraPoints")
+
+    top3_data = sheet_top3.get_all_records()
+    extra_data = sheet_extra.get_all_records()
+
+    daily_top3 = {}
+    for row in top3_data:
+        daily_top3[row["Date"]] = [row["Name1"], row["Name2"], row["Name3"]]
+
+    return {
+        "daily_top3": daily_top3,
+        "extra_points": extra_data
+    }
 
 def add_daily_top3(date_str, top3_names):
-    data = load_data()
-    data["daily_top3"][date_str] = top3_names
-    save_data(data)
+    client = get_gsheet_client()
+    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("Top3")
+    sheet_top3.append_row([date_str] + top3_names)
 
 def add_extra_points(name, points, reason):
-    data = load_data()
-    data["extra_points"].append({
-        "name": name,
-        "points": points,
-        "reason": reason,
-        "date": datetime.today().strftime("%Y-%m-%d")
-    })
-    save_data(data)
+    client = get_gsheet_client()
+    sheet_extra = client.open("ClassificaAbbigliamento").worksheet("ExtraPoints")
+    sheet_extra.append_row([
+        datetime.today().strftime("%Y-%m-%d"),
+        name,
+        points,
+        reason
+    ])
+
 
 def calculate_global_ranking(data):
     scores = defaultdict(int)
