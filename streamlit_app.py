@@ -58,8 +58,11 @@ def calculate_global_ranking(data):
         for i, name in enumerate(top3):
             scores[name] += POINTS[i]
 
-    for entry in data["extra_points"]:
-        scores[entry["name"]] += entry["points"]
+    for entry in data:
+        if "name" in entry and "points" in entry:
+            scores[entry["name"]] += entry["points"]
+        else:
+            st.warning(f"Skipping malformed entry: {entry}")
 
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
