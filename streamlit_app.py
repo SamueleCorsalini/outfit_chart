@@ -7,8 +7,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from collections import defaultdict
 
 # ==== Google Sheets Setup ====
+creds_dict = st.secrets["GOOGLE_SHEET_CREDS"]
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 sheet = client.open("ClassificaAbbigliamento")
