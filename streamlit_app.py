@@ -17,6 +17,8 @@ top3_ws = sheet.worksheet("daily_top3")
 extra_ws = sheet.worksheet("extra_points")
 theme_ws = sheet.worksheet("themes")
 
+POINTS = [25, 20, 15]
+
 # ==== Load Data ====
 def load_top3():
     return pd.DataFrame(top3_ws.get_all_records())
@@ -27,18 +29,53 @@ def load_extra():
 def load_themes():
     return pd.DataFrame(theme_ws.get_all_records())
 
+def show_top3(date_str, data):
+    st.subheader(f"👔 Top 3 - {date_str}")
+    top3 = data["daily_top3"].get(date_str)
+    if not top3:
+        st.info("Nessuna classifica registrata per questa data.")
+        return
+    for i, name in enumerate(top3):
+        st.write(f"{i+1}. {name} (+{POINTS[i]} punti)")
+
 # ==== Save Data ====
 def add_daily_top3(date_str, top3_names):
-    sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("daily_top3")
-    sheet_top3.append_row([date_str] + top3_names)
+    top3_ws.append_row([date_str] + top3_names)
 
-def save_extra(df):
-    extra_ws.clear()
-    extra_ws.update([df.columns.values.tolist()] + df.values.tolist())
 
-def save_themes(df):
-    theme_ws.clear()
-    theme_ws.update([df.columns.values.tolist()] + df.values.tolist())
+def remove_daily_top3(date_str):
+    all_data = top3_ws.get_all_values()
+    for idx, row in enumerate(all_data):
+        if row[0] == date_str:
+            sheet.delete_rows(idx+1)
+            break
+
+def add_extra_points(name, points, reason):
+    extra_ws.append_row([
+        datetime.today().strftime("%Y-%m-%d"),
+        name,
+        points,
+        reason
+    ])
+
+def remove_extra_point(entry_to_remove):
+    all_data = extra_ws.get_all_values()
+    headers = all_data[0]
+    for idx, row in enumerate(all_data[1:], start=2):
+        entry = dict(zip(headers, row))
+        if all(str(entry.get(k, "")) == str(entry_to_remove.get(k, "")) for k in ["Date", "Name", "Points", "Reason"]):
+            sheet.delete_rows(idx)
+            return True
+    return False
+
+def set_theme(date_str, theme):
+    sheet = client.open("ClassificaAbbigliamento").worksheet("themes")
+    all_data = sheet.get_all_values()
+    for idx, row in enumerate(all_data):
+        if row[0] == date_str:
+            sheet.delete_rows(idx + 1)
+            break
+    sheet.append_row([date_str, theme])
 
 # Check admin access
 def check_admin():
@@ -140,35 +177,63 @@ def main():
                 else:
                     st.warning("Inserisci tutti e tre i nomi.")
 
-            st.subheader("Elimina Top 3")
-            if not top3.empty:
-                date_to_delete = st.date_input("Scegli data", key="delete_date")
-                if date_to_delete.isoformat() in top3["Date"].values:
-                    row = top3[top3["Date"] == date_to_delete.isoformat()].iloc[0]
-                    st.warning(f"Confermi eliminazione della top 3 per il {date_to_delete}?\n\n1°: {row['Name1']}\n2°: {row['Name2']}\n3°: {row['Name3']}")
-                    if st.button("Conferma eliminazione"):
-                        top3 = top3[top3["Date"] != date_to_delete.isoformat()]
-                        save_top3(top3)
-                        st.success("Top 3 eliminata")
+            # Elimina Top 3
+            st.subheader("Rimuovi Top 3")
+            date_str = st.date_input("Seleziona la data")
+            if date_str in top3_ws:
+                if st.button("🗑️ Elimina Top 3 di questo giorno"):
+                    with st.expander("Conferma eliminazione Top 3"):
+                        show_top3(date_str, sheet)
+                        if st.button("Conferma eliminazione Top 3"):
+                            remove_daily_top3(date_str)
+                            st.success("Top 3 eliminata.")
+                            st.rerun()
 
-            st.subheader("Elimina punti extra")
-            if not extra.empty:
-                selected = st.selectbox("Seleziona riga da eliminare:",
-                                        [f"{row['Date']} | {row['Name']} ({row['Points']} pt): {row['Reason']}" for _, row in extra.iterrows()])
-                if st.button("Elimina punti extra"):
-                    idx = [i for i, row in extra.iterrows() if f"{row['Date']} | {row['Name']}" in selected][0]
-                    extra = extra.drop(idx).reset_index(drop=True)
-                    save_extra(extra)
-                    st.success("Punti extra eliminati")
+            st.divider()
+            st.write("Assegna punti extra:")
+            extra_name = st.text_input("Nome destinatario", key="extra_name")
+            extra_points = st.number_input("Punti extra", min_value=1, step=1, key="extra_pts")
+            reason = st.text_input("Motivazione", key="extra_reason")
+            if st.button("Assegna punti extra"):
+                if extra_name and reason:
+                    add_extra_points(extra_name, int(extra_points), reason)
+                    st.success("Punti extra assegnati.")
+                    st.rerun()
+                else:
+                    st.warning("Inserisci nome e motivazione.")
 
-            st.subheader("Imposta tema giornaliero")
-            date = st.date_input("Data tema")
-            theme = st.text_input("Tema")
-            if st.button("Aggiungi tema"):
-                new_row = pd.DataFrame([[date.isoformat(), theme]], columns=["Date", "Theme"])
-                themes = pd.concat([themes, new_row], ignore_index=True)
-                save_themes(themes)
-                st.success("Tema aggiunto!")
+            st.divider()
+            st.write("📋 Punti extra assegnati:")
+            for entry in extra_ws:
+                formatted = f"{entry['Date']} - {entry['Name']} (+{entry['Points']}): {entry['Reason']}"
+                if st.button(f"🗑 Elimina", key=str(entry)):
+                    with st.expander(f"Conferma eliminazione di:"):
+                        st.write(formatted)
+                        if st.button("Conferma eliminazione", key=str(entry)+"confirm"):
+                            success = remove_extra_point(entry)
+                            if success:
+                                st.success("Voce eliminata.")
+                                st.rerun()
+                            else:
+                                st.error("Errore durante l'eliminazione.")
+                else:
+                    st.write(formatted)
+
+            
+            st.divider()
+            st.write("🎨 Imposta tema del giorno:")
+            theme_date = st.date_input("Data tema:", value=datetime.today(), key="theme_date")
+            theme_str = st.text_input("Tema:", key="theme_text")
+            if st.button("Imposta tema"):
+                if theme_str:
+                    set_theme(theme_date.strftime("%Y-%m-%d"), theme_str)
+                    st.success("Tema impostato.")
+                    st.rerun()
+                else:
+                    st.warning("Inserisci un tema valido.")
+        else:
+            st.error("Password errata.")
+
 
 if __name__ == "__main__":
     main()
