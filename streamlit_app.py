@@ -15,8 +15,8 @@ client = gspread.authorize(creds)
 SPREADSHEET_NAME = "ClassificaAbbigliamento"
 
 # Sheet references
-sheet_main = client.open(SPREADSHEET_NAME).worksheet("main")
-sheet_extra = client.open(SPREADSHEET_NAME).worksheet("extra")
+sheet_main = client.open(SPREADSHEET_NAME).worksheet("daily_top3")
+sheet_extra = client.open(SPREADSHEET_NAME).worksheet("extra_points")
 sheet_themes = client.open(SPREADSHEET_NAME).worksheet("themes")
 
 # Load data
