@@ -3,14 +3,12 @@ import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime, timedelta
 from collections import defaultdict
-import json
-import os
-import matplotlib.pyplot as plt
+import pandas as pd
 
 DATA_FILE = "data.json"
 ADMIN_PASSWORD = "capibara"
 POINTS = [25, 20, 15]
-TARGET_SCORE = 500
+GOAL_POINTS = 500
 
 # Autenticazione Google Sheets
 def get_gsheet_client():
@@ -25,9 +23,9 @@ def load_data():
     sheet_extra = client.open("ClassificaAbbigliamento").worksheet("extra_points")
     try:
         sheet_themes = client.open("ClassificaAbbigliamento").worksheet("themes")
-        themes_data = sheet_themes.get_all_records()
-    except gspread.exceptions.WorksheetNotFound:
-        themes_data = []
+        theme_data = sheet_themes.get_all_records()
+    except:
+        theme_data = []
 
     top3_data = sheet_top3.get_all_records()
     extra_data = sheet_extra.get_all_records()
@@ -36,16 +34,27 @@ def load_data():
     for row in top3_data:
         daily_top3[row["Date"]] = [row["Name1"], row["Name2"], row["Name3"]]
 
+    themes = {row["Date"]: row["Theme"] for row in theme_data if "Date" in row and "Theme" in row}
+
     return {
         "daily_top3": daily_top3,
         "extra_points": extra_data,
-        "themes": {row["Date"]: row["Theme"] for row in themes_data}
+        "themes": themes
     }
 
 def add_daily_top3(date_str, top3_names):
     client = get_gsheet_client()
     sheet_top3 = client.open("ClassificaAbbigliamento").worksheet("daily_top3")
     sheet_top3.append_row([date_str] + top3_names)
+
+def remove_daily_top3(date_str):
+    client = get_gsheet_client()
+    sheet = client.open("ClassificaAbbigliamento").worksheet("daily_top3")
+    all_data = sheet.get_all_values()
+    for idx, row in enumerate(all_data):
+        if row[0] == date_str:
+            sheet.delete_rows(idx+1)
+            break
 
 def add_extra_points(name, points, reason):
     client = get_gsheet_client()
@@ -57,29 +66,40 @@ def add_extra_points(name, points, reason):
         reason
     ])
 
-def add_theme(date_str, theme):
+def remove_extra_point(entry_to_remove):
     client = get_gsheet_client()
-    sheet_themes = client.open("ClassificaAbbigliamento").worksheet("themes")
-    sheet_themes.append_row([date_str, theme])
+    sheet = client.open("ClassificaAbbigliamento").worksheet("extra_points")
+    all_data = sheet.get_all_values()
+    headers = all_data[0]
+    for idx, row in enumerate(all_data[1:], start=2):
+        entry = dict(zip(headers, row))
+        if all(str(entry.get(k, "")) == str(entry_to_remove.get(k, "")) for k in ["Date", "Name", "Points", "Reason"]):
+            sheet.delete_rows(idx)
+            return True
+    return False
+
+def set_theme(date_str, theme):
+    client = get_gsheet_client()
+    sheet = client.open("ClassificaAbbigliamento").worksheet("themes")
+    all_data = sheet.get_all_values()
+    for idx, row in enumerate(all_data):
+        if row[0] == date_str:
+            sheet.delete_rows(idx + 1)
+            break
+    sheet.append_row([date_str, theme])
 
 def calculate_global_ranking(data):
     scores = defaultdict(int)
-    history = defaultdict(list)
-
     for date, top3 in data.get("daily_top3", {}).items():
         for i, name in enumerate(top3):
             scores[name] += POINTS[i]
-            history[name].append((date, POINTS[i]))
-
     for entry in data.get("extra_points", []):
-        name = entry.get("name") or entry.get("Name")
-        points = entry.get("points") or entry.get("Points")
-        date = entry.get("date") or entry.get("Date")
-        if name and points:
-            scores[name] += int(points)
-            history[name].append((date, int(points)))
-
-    return sorted(scores.items(), key=lambda x: x[1], reverse=True), history
+        if isinstance(entry, dict):
+            name = entry.get("name") or entry.get("Name")
+            points = entry.get("points") or entry.get("Points")
+            if name and points:
+                scores[name] += int(points)
+    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
 def show_top3(date_str, data):
     st.subheader(f"👔 Top 3 - {date_str}")
@@ -90,15 +110,19 @@ def show_top3(date_str, data):
     for i, name in enumerate(top3):
         st.write(f"{i+1}. {name} (+{POINTS[i]} punti)")
 
+def show_theme_of_today(data):
+    today_str = datetime.today().strftime("%Y-%m-%d")
+    theme = data.get("themes", {}).get(today_str)
+    if theme:
+        st.markdown(f"### 🎨 Tema del giorno: **{theme}**")
+
 def main():
     st.set_page_config("Classifica Abbigliamento", layout="centered")
     st.title("🏆 Classifica Abbigliamento in Ufficio")
 
     data = load_data()
 
-    today_str = datetime.today().strftime("%Y-%m-%d")
-    if today_str in data.get("themes", {}):
-        st.markdown(f"### 👗 Tema del giorno: **{data['themes'][today_str]}**")
+    show_theme_of_today(data)
 
     yesterday = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     if yesterday in data["daily_top3"]:
@@ -107,11 +131,11 @@ def main():
         st.info("Nessuna top 3 registrata per ieri.")
 
     st.subheader("📊 Classifica globale")
-    ranking, history = calculate_global_ranking(data)
+    ranking = calculate_global_ranking(data)
     for i, (name, score) in enumerate(ranking, 1):
-        progress = min(score / TARGET_SCORE, 1.0)
+        progress = min(score / GOAL_POINTS, 1.0)
         st.write(f"{i}. {name}: {score} punti")
-        st.progress(progress, text=f"{score}/{TARGET_SCORE} punti")
+        st.progress(progress, text=f"Obiettivo: 500 punti")
 
     st.divider()
 
@@ -126,49 +150,54 @@ def main():
     st.divider()
 
     with st.expander("📈 Statistiche avanzate"):
-        selected_users = st.multiselect("Seleziona partecipanti da analizzare:", list(history.keys()))
-        if selected_users:
-            fig, ax = plt.subplots()
-            for name in selected_users:
-                entries = sorted(history[name], key=lambda x: x[0])
-                dates = [x[0] for x in entries]
-                cumulative = []
-                total = 0
-                for _, pts in entries:
-                    total += pts
-                    cumulative.append(total)
-                ax.plot(dates, cumulative, label=name)
-            ax.legend()
-            ax.set_title("Andamento punti nel tempo")
-            ax.set_xlabel("Data")
-            ax.set_ylabel("Punti cumulativi")
-            st.pyplot(fig)
+        all_dates = sorted(list(set(data["daily_top3"].keys())))
+        if not all_dates:
+            st.info("Non ci sono abbastanza dati per generare statistiche.")
+        else:
+            df_scores = pd.DataFrame(columns=["Date"] + list({name for top3 in data["daily_top3"].values() for name in top3}))
+            cumulative = defaultdict(int)
+            for d in all_dates:
+                row = {"Date": d}
+                for i, name in enumerate(data["daily_top3"][d]):
+                    cumulative[name] += POINTS[i]
+                row.update(cumulative)
+                df_scores = pd.concat([df_scores, pd.DataFrame([row])], ignore_index=True)
+            df_scores = df_scores.fillna(method='ffill').fillna(0)
+            df_scores["Date"] = pd.to_datetime(df_scores["Date"])
+            df_scores.set_index("Date", inplace=True)
+            st.line_chart(df_scores)
 
     st.divider()
-
     st.subheader("🔐 Area riservata (admin)")
     with st.expander("Login Admin"):
         password = st.text_input("Inserisci password admin:", type="password")
         if password == ADMIN_PASSWORD:
             st.success("Accesso admin riuscito.")
-            selected_top3_date = st.date_input(
-                "Seleziona una data per cui inserire/modificare la Top 3:",
-                value=datetime.today(),
-                max_value=datetime.today()
-            )
+            selected_top3_date = st.date_input("Data per modificare/inserire Top 3:", value=datetime.today(), max_value=datetime.today())
             date_str = selected_top3_date.strftime("%Y-%m-%d")
 
-            st.write(f"Inserisci la top 3 per il giorno selezionato ({date_str}):")
+            st.write(f"Inserisci la Top 3 per il {date_str}:")
             name1 = st.text_input("1° posto", key="pos1")
             name2 = st.text_input("2° posto", key="pos2")
             name3 = st.text_input("3° posto", key="pos3")
+
             if st.button("Salva top 3"):
                 if name1 and name2 and name3:
                     add_daily_top3(date_str, [name1, name2, name3])
-                    st.success(f"Top 3 per {date_str} salvata con successo.")
+                    st.success(f"Top 3 per {date_str} salvata.")
                 else:
                     st.warning("Inserisci tutti e tre i nomi.")
 
+            if date_str in data["daily_top3"]:
+                if st.button("🗑️ Elimina Top 3 di questo giorno"):
+                    with st.expander("Conferma eliminazione Top 3"):
+                        show_top3(date_str, data)
+                        if st.button("Conferma eliminazione Top 3"):
+                            remove_daily_top3(date_str)
+                            st.success("Top 3 eliminata.")
+                            st.rerun()
+
+            st.divider()
             st.write("Assegna punti extra:")
             extra_name = st.text_input("Nome destinatario", key="extra_name")
             extra_points = st.number_input("Punti extra", min_value=1, step=1, key="extra_pts")
@@ -181,15 +210,34 @@ def main():
                 else:
                     st.warning("Inserisci nome e motivazione.")
 
-            st.write("\n---\n**📅 Imposta un tema per un giorno specifico**")
-            theme_date = st.date_input("Data tema", key="theme_date")
-            theme_text = st.text_input("Descrizione tema", key="theme_text")
-            if st.button("Salva tema"):
-                if theme_text:
-                    add_theme(theme_date.strftime("%Y-%m-%d"), theme_text)
-                    st.success("Tema salvato correttamente.")
+            st.divider()
+            st.write("📋 Punti extra assegnati:")
+            for entry in data["extra_points"]:
+                formatted = f"{entry['Date']} - {entry['Name']} (+{entry['Points']}): {entry['Reason']}"
+                if st.button(f"🗑 Elimina", key=str(entry)):
+                    with st.expander(f"Conferma eliminazione di:"):
+                        st.write(formatted)
+                        if st.button("Conferma eliminazione", key=str(entry)+"confirm"):
+                            success = remove_extra_point(entry)
+                            if success:
+                                st.success("Voce eliminata.")
+                                st.rerun()
+                            else:
+                                st.error("Errore durante l'eliminazione.")
                 else:
-                    st.warning("Inserisci una descrizione per il tema.")
+                    st.write(formatted)
+
+            st.divider()
+            st.write("🎨 Imposta tema del giorno:")
+            theme_date = st.date_input("Data tema:", value=datetime.today(), key="theme_date")
+            theme_str = st.text_input("Tema:", key="theme_text")
+            if st.button("Imposta tema"):
+                if theme_str:
+                    set_theme(theme_date.strftime("%Y-%m-%d"), theme_str)
+                    st.success("Tema impostato.")
+                    st.rerun()
+                else:
+                    st.warning("Inserisci un tema valido.")
 
         elif password:
             st.error("Password errata.")
