@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -154,7 +154,7 @@ def main():
         ax.set_xlabel("Data")
         ax.set_ylabel("Punteggio cumulativo")
         ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
 
     # === Admin Panel ===
     st.sidebar.title("Admin")
