@@ -158,82 +158,82 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
     # === Admin Panel ===
-    '''st.sidebar.title("Admin")
-    with st.sidebar:
-        if check_admin():
-            st.success("Accesso admin confermato")
+    # st.sidebar.title("Admin")
+    # with st.sidebar:
+    #     if check_admin():
+    #         st.success("Accesso admin confermato")
 
-            # Assegna Top 3
-            st.subheader("Assegna la Top 3")
-            date_top3 = st.date_input("Seleziona la data")
-            st.write(f"Inserisci la top 3 per il giorno selezionato ({date_top3}):")
-            name1 = st.text_input("1° posto", key="pos1")
-            name2 = st.text_input("2° posto", key="pos2")
-            name3 = st.text_input("3° posto", key="pos3")
+    #         # Assegna Top 3
+    #         st.subheader("Assegna la Top 3")
+    #         date_top3 = st.date_input("Seleziona la data")
+    #         st.write(f"Inserisci la top 3 per il giorno selezionato ({date_top3}):")
+    #         name1 = st.text_input("1° posto", key="pos1")
+    #         name2 = st.text_input("2° posto", key="pos2")
+    #         name3 = st.text_input("3° posto", key="pos3")
 
-            if st.button("Salva top 3"):
-                if name1 and name2 and name3:
-                    add_daily_top3(date_top3, [name1, name2, name3])
-                    st.success(f"Top 3 per {date_top3} salvata con successo.")
-                else:
-                    st.warning("Inserisci tutti e tre i nomi.")
+    #         if st.button("Salva top 3"):
+    #             if name1 and name2 and name3:
+    #                 add_daily_top3(date_top3, [name1, name2, name3])
+    #                 st.success(f"Top 3 per {date_top3} salvata con successo.")
+    #             else:
+    #                 st.warning("Inserisci tutti e tre i nomi.")
 
-            # Elimina Top 3
-            st.subheader("Rimuovi Top 3")
-            date_str = st.date_input("Seleziona la data")
-            if date_str in top3_ws:
-                if st.button("🗑️ Elimina Top 3 di questo giorno"):
-                    with st.expander("Conferma eliminazione Top 3"):
-                        show_top3(date_str, sheet)
-                        if st.button("Conferma eliminazione Top 3"):
-                            remove_daily_top3(date_str)
-                            st.success("Top 3 eliminata.")
-                            st.rerun()
+    #         # Elimina Top 3
+    #         st.subheader("Rimuovi Top 3")
+    #         date_str = st.date_input("Seleziona la data")
+    #         if date_str in top3_ws:
+    #             if st.button("🗑️ Elimina Top 3 di questo giorno"):
+    #                 with st.expander("Conferma eliminazione Top 3"):
+    #                     show_top3(date_str, sheet)
+    #                     if st.button("Conferma eliminazione Top 3"):
+    #                         remove_daily_top3(date_str)
+    #                         st.success("Top 3 eliminata.")
+    #                         st.rerun()
 
-            st.divider()
-            st.write("Assegna punti extra:")
-            extra_name = st.text_input("Nome destinatario", key="extra_name")
-            extra_points = st.number_input("Punti extra", min_value=1, step=1, key="extra_pts")
-            reason = st.text_input("Motivazione", key="extra_reason")
-            if st.button("Assegna punti extra"):
-                if extra_name and reason:
-                    add_extra_points(extra_name, int(extra_points), reason)
-                    st.success("Punti extra assegnati.")
-                    st.rerun()
-                else:
-                    st.warning("Inserisci nome e motivazione.")
+    #         st.divider()
+    #         st.write("Assegna punti extra:")
+    #         extra_name = st.text_input("Nome destinatario", key="extra_name")
+    #         extra_points = st.number_input("Punti extra", min_value=1, step=1, key="extra_pts")
+    #         reason = st.text_input("Motivazione", key="extra_reason")
+    #         if st.button("Assegna punti extra"):
+    #             if extra_name and reason:
+    #                 add_extra_points(extra_name, int(extra_points), reason)
+    #                 st.success("Punti extra assegnati.")
+    #                 st.rerun()
+    #             else:
+    #                 st.warning("Inserisci nome e motivazione.")
 
-            st.divider()
-            st.write("📋 Punti extra assegnati:")
-            for entry in extra_ws:
-                formatted = f"{entry['Date']} - {entry['Name']} (+{entry['Points']}): {entry['Reason']}"
-                if st.button(f"🗑 Elimina", key=str(entry)):
-                    with st.expander(f"Conferma eliminazione di:"):
-                        st.write(formatted)
-                        if st.button("Conferma eliminazione", key=str(entry)+"confirm"):
-                            success = remove_extra_point(entry)
-                            if success:
-                                st.success("Voce eliminata.")
-                                st.rerun()
-                            else:
-                                st.error("Errore durante l'eliminazione.")
-                else:
-                    st.write(formatted)
+    #         st.divider()
+    #         st.write("📋 Punti extra assegnati:")
+    #         for entry in extra_ws:
+    #             formatted = f"{entry['Date']} - {entry['Name']} (+{entry['Points']}): {entry['Reason']}"
+    #             if st.button(f"🗑 Elimina", key=str(entry)):
+    #                 with st.expander(f"Conferma eliminazione di:"):
+    #                     st.write(formatted)
+    #                     if st.button("Conferma eliminazione", key=str(entry)+"confirm"):
+    #                         success = remove_extra_point(entry)
+    #                         if success:
+    #                             st.success("Voce eliminata.")
+    #                             st.rerun()
+    #                         else:
+    #                             st.error("Errore durante l'eliminazione.")
+    #             else:
+    #                 st.write(formatted)
 
             
-            st.divider()
-            st.write("🎨 Imposta tema del giorno:")
-            theme_date = st.date_input("Data tema:", value=datetime.today(), key="theme_date")
-            theme_str = st.text_input("Tema:", key="theme_text")
-            if st.button("Imposta tema"):
-                if theme_str:
-                    set_theme(theme_date.strftime("%Y-%m-%d"), theme_str)
-                    st.success("Tema impostato.")
-                    st.rerun()
-                else:
-                    st.warning("Inserisci un tema valido.")
-        else:
-            st.error("Password errata.")'''
+    #         st.divider()
+    #         st.write("🎨 Imposta tema del giorno:")
+    #         theme_date = st.date_input("Data tema:", value=datetime.today(), key="theme_date")
+    #         theme_str = st.text_input("Tema:", key="theme_text")
+    #         if st.button("Imposta tema"):
+    #             if theme_str:
+    #                 set_theme(theme_date.strftime("%Y-%m-%d"), theme_str)
+    #                 st.success("Tema impostato.")
+    #                 st.rerun()
+    #             else:
+    #                 st.warning("Inserisci un tema valido.")
+    #     else:
+    #         st.error("Password errata.")
 
 
 if __name__ == "__main__":
