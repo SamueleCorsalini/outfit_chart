@@ -159,7 +159,7 @@ def main():
 
     # === Admin Panel ===
     st.sidebar.title("Admin")
-    with st.sidebar:
+    '''with st.sidebar:
         if check_admin():
             st.success("Accesso admin confermato")
 
@@ -233,7 +233,7 @@ def main():
                 else:
                     st.warning("Inserisci un tema valido.")
         else:
-            st.error("Password errata.")
+            st.error("Password errata.")'''
 
 
 if __name__ == "__main__":
