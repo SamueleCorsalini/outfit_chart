@@ -142,7 +142,7 @@ def main():
         all_dates = pd.to_datetime(top3["Date"]).sort_values().unique()
         for d in all_dates:
             day_df = top3[pd.to_datetime(top3["Date"]) == d]
-            for n, p in zip(["Name1", "Name2", "Name3"], [3,2,1]):
+            for n, p in zip(["Name1", "Name2", "Name3"], [25,20,15]):
                 history[day_df.iloc[0][n]] += p
             for name in history:
                 df_list.append({"Date": d, "Name": name, "Score": history[name]})
