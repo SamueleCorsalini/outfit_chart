@@ -158,8 +158,8 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
     # === Admin Panel ===
-    st.sidebar.title("Admin")
-    '''with st.sidebar:
+    '''st.sidebar.title("Admin")
+    with st.sidebar:
         if check_admin():
             st.success("Accesso admin confermato")
 
