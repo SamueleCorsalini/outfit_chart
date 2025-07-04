@@ -99,7 +99,7 @@ def main():
 
     modal = Modal("📖 Regolamento del Concorso", key="regolamento")
 
-    _,c1= st.columns([5,1])
+    _,c1= st.columns([3,1])
 
     open_modal = c1.button("Regolamento", icon="📖", help= "Mostra regolamento del concorso")
 
