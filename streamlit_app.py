@@ -32,7 +32,7 @@ def load_themes():
 
 def show_top3(date_str, data):
     st.subheader(f"👔 Top 3 - {date_str}")
-    top3 = data["daily_top3"].get(date_str)
+    top3 = data.get(date_str)
     if not top3:
         st.info("Nessuna classifica registrata per questa data.")
         return
@@ -115,7 +115,7 @@ def main():
     # === Classifica Ultimo Giorno === 
     today = datetime.date.today()
     yesterday = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    show_top3(yesterday, sheet)
+    show_top3(yesterday, top3)
 
     # === Classifica ===
     st.header("Classifica Generale")
