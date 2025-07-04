@@ -97,7 +97,7 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
-    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=40)
+    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=80)
 
     _,c1= st.columns([3,1])
 
