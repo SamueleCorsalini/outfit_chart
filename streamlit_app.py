@@ -180,15 +180,16 @@ def main():
 
         # Improve layout: light axis text, better spacing
         fig.update_layout(
+            title="Andamento punteggi nel tempo",
             xaxis_title="Data",
             yaxis_title="Punteggio cumulativo",
-            xaxis=dict(tickfont=dict(color='white'), titlefont=dict(color='white')),
-            yaxis=dict(tickfont=dict(color='white'), titlefont=dict(color='white')),
+            xaxis_tickfont_color='white',
+            yaxis_tickfont_color='white',
             legend_title_text='Partecipanti',
             legend=dict(orientation="v", yanchor="top", y=1.0, xanchor="left", x=1.02),
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color="white")
+            font_color="white"
         )
 
         st.plotly_chart(fig, use_container_width=True)
