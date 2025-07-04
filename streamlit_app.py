@@ -139,31 +139,58 @@ def main():
         st.progress(min(row['Punteggio'] / 500, 1.0), text=f"{row['Punteggio']} / 500 punti per il premio!")
 
     # === Storico top 3 ===
-    st.header("Storico Top 3")
+    st.header("🗓️ Storico Top 3")
     st.dataframe(top3.sort_values("Date", ascending=False), use_container_width=True)
 
     # === Statistiche Avanzate ===
-    if st.toggle("Visualizza statistiche avanzate", key="stats_toggle"):
+    if st.toggle("Visualizza statistiche avanzate 📊", key="stats_toggle"):
         st.markdown("---")
         st.subheader("Andamento punteggi nel tempo")
+
         history = defaultdict(int)
         df_list = []
         all_dates = pd.to_datetime(top3["Date"]).sort_values().unique()
+
         for d in all_dates:
             day_df = top3[pd.to_datetime(top3["Date"]) == d]
-            for n, p in zip(["Name1", "Name2", "Name3"], [25,20,15]):
+            for n, p in zip(["Name1", "Name2", "Name3"], [25, 20, 15]):
                 history[day_df.iloc[0][n]] += p
             for name in history:
                 df_list.append({"Date": d, "Name": name, "Score": history[name]})
+
         df = pd.DataFrame(df_list)
 
-        fig, ax = plt.subplots()
-        for name in df["Name"].unique():
-            user_df = df[df["Name"] == name]
-            ax.plot(user_df["Date"], user_df["Score"], label=name)
-        ax.set_xlabel("Data")
-        ax.set_ylabel("Punteggio cumulativo")
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+        # Sort by final score (last date) to get top 10
+        final_scores = df[df["Date"] == df["Date"].max()].sort_values("Score", ascending=False)
+        all_names = df["Name"].unique()
+        top_names = final_scores["Name"].head(10).tolist()
+
+        selected_names = st.multiselect("Seleziona persone da mostrare", options=all_names, default=top_names)
+
+        filtered_df = df[df["Name"].isin(selected_names)]
+
+        fig = px.line(
+            filtered_df,
+            x="Date",
+            y="Score",
+            color="Name",
+            labels={"Score": "Punteggio cumulativo", "Date": "Data"},
+            title="Andamento punteggi nel tempo"
+        )
+
+        # Improve layout: light axis text, better spacing
+        fig.update_layout(
+            xaxis_title="Data",
+            yaxis_title="Punteggio cumulativo",
+            xaxis=dict(tickfont=dict(color='white'), titlefont=dict(color='white')),
+            yaxis=dict(tickfont=dict(color='white'), titlefont=dict(color='white')),
+            legend_title_text='Partecipanti',
+            legend=dict(orientation="v", yanchor="top", y=1.0, xanchor="left", x=1.02),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color="white")
+        )
+
         st.plotly_chart(fig, use_container_width=True)
 
     # === Admin Panel ===
