@@ -114,7 +114,7 @@ def main():
 
     # === Classifica Ultimo Giorno === 
     today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1).strftime('%Y-%m-%d')
+    yesterday = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     show_top3(yesterday, top3_ws)
 
     # === Classifica ===
