@@ -6,6 +6,7 @@ import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from collections import defaultdict
+from streamlit_modal import Modal
 
 # ==== Google Sheets Setup ====
 creds_dict = st.secrets["GOOGLE_SHEET_CREDS"]
@@ -96,21 +97,23 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
-    # Toggle con emoji libro
-    show_rules = st.button("📖 Mostra Regolamento del Concorso")
+    modal = Modal("📖 Regolamento del Concorso", key="regolamento")
 
-    if show_rules:
-        st.markdown("""
-        ### 📜 Regolamento del Concorso
+    open_modal = st.button("Regolamento del Concorso", icon="📖", help= "Mostra regolamento")
 
-        1. Ogni partecipante può inviare una sola foto.
-        2. Le immagini devono essere originali e di proprietà dell’autore.
-        3. Il concorso si chiude il **30 settembre 2025**.
-        4. Le foto saranno valutate da una giuria qualificata.
-        5. I premi saranno assegnati entro 15 giorni dalla chiusura del concorso.
-        
-        Per maggiori dettagli, consulta il sito ufficiale.
-        """)
+    if open_modal:
+        modal.open()
+
+    if modal.is_open():
+        with modal.container():
+            st.markdown("""
+            ### 📜 Regolamento
+            
+            1. Una foto per partecipante  
+            2. Dev'essere originale  
+            3. Chiusura: **30 settembre 2025**  
+            4. Giuria valuterà le immagini
+            """)
 
     top3 = load_top3()
     extra = load_extra()
