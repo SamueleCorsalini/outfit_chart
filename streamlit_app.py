@@ -32,10 +32,13 @@ def load_themes():
 
 def show_top3(date_str, data):
     st.subheader(f"👔 Top 3 - {date_str}")
-    top3 = data.get(date_str)
-    if not top3:
+    
+    row = data[data["Date"] == date_str]
+    if row.empty:
         st.info("Nessuna classifica registrata per questa data.")
         return
+
+    top3 = row.iloc[0][["Name1", "Name2", "Name3"]].tolist()
     for i, name in enumerate(top3):
         st.write(f"{i+1}. {name} (+{POINTS[i]} punti)")
 
