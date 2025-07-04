@@ -109,12 +109,60 @@ def main():
     if modal.is_open():
         with modal.container():
             st.markdown("""
-            ### 
-            
-            1. Una foto per partecipante  
-            2. Dev'essere originale  
-            3. Chiusura: **30 settembre 2025**  
-            4. Giuria valuterà le immagini
+            ## 1. Classifica Giornaliera
+            Ogni giorno lavorativo viene stilata una classifica dei tre migliori outfit tra i colleghi presenti in ufficio.
+            I punteggi assegnati sono i seguenti:
+
+            🥇 1° posto: 25 punti
+
+            🥈 2° posto: 20 punti
+
+            🥉 3° posto: 15 punti
+
+            La classifica viene definita a insindacabile giudizio di Francesca, che riveste il ruolo di giudice supremo unico e assoluto.
+
+            In caso di assenza di Francesca, Samuele C. assume in via eccezionale il ruolo di giudice. Tuttavia, Samuele non può in alcun caso attribuire punti a sé stesso.
+
+            Se entrambi i giudici sono assenti dall’ufficio, la classifica giornaliera non viene stilata.
+            Anche in presenza dei giudici, la classifica può non essere assegnata, qualora si ritenga che nessun outfit sia meritevole di riconoscimento per quel giorno.
+
+            ## 2. Punti Bonus
+            Oltre ai punteggi della classifica giornaliera, il giudice può attribuire, a propria totale discrezione, dei punti bonus.
+            Tali punti possono essere assegnati per qualsiasi motivazione ritenuta valida dal giudice, e l'entità del bonus è variabile.
+
+            ## 3. Criteri di Valutazione
+            I giudizi si basano su una pluralità di elementi stilistici e di presentazione, tra cui:
+
+            Scelta dei capi
+
+            Coordinazione dell’outfit
+
+            Accostamento cromatico
+
+            Originalità e stile personale
+
+            Portamento e atteggiamento
+
+            Cura del trucco (se presente)
+
+            Acconciatura
+
+            Manicure / Smalti
+
+            Accessori (occhiali, gioielli, cinture, borse, ecc.)
+
+            Coerenza generale dell’immagine
+
+            Altri fattori non elencati possono essere considerati rilevanti, a piena discrezione del giudice.
+
+            ## 4. Partecipazione
+            Non è necessario alcun tipo di iscrizione formale per partecipare:
+            chiunque si presenti in ufficio con un outfit curato partecipa automaticamente al contest.
+
+            ## 5. Premio Finale
+            Il primo concorrente che raggiungerà la soglia di 500 punti riceverà un premio esclusivo e molto bello, messo in palio personalmente da Francesca.
+
+
             """)
 
     top3 = load_top3()
