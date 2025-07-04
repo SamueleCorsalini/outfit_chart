@@ -101,7 +101,7 @@ def main():
 
     _,c1= st.columns([5,1])
 
-    open_modal = c1.button("Regolamento del Concorso", icon="📖", help= "Mostra regolamento")
+    open_modal = c1.button("Regolamento", icon="📖", help= "Mostra regolamento del concorso")
 
     if open_modal:
         modal.open()
