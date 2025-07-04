@@ -31,7 +31,7 @@ def load_themes():
     return pd.DataFrame(theme_ws.get_all_records())
 
 def show_top3(date_str, data):
-    st.subheader(f"👔 Top 3 - {date_str}")
+    st.subheader(f"☀️ Top 3 - {date_str}")
     
     row = data[data["Date"] == date_str]
     if row.empty:
@@ -94,7 +94,7 @@ def assign_top3(date, first, second, third):
 
 # ==== Main App ====
 def main():
-    st.title("🌟 Classifica Abbigliamento 🌟")
+    st.title("👔 Classifica Outfit 👗")
 
     top3 = load_top3()
     extra = load_extra()
