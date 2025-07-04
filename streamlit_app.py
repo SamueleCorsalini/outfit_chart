@@ -133,25 +133,25 @@ def main():
             ## 3. Criteri di Valutazione
             I giudizi si basano su una pluralità di elementi stilistici e di presentazione, tra cui:
 
-            Scelta dei capi
+            * Scelta dei capi
 
-            Coordinazione dell’outfit
+            * Coordinazione dell’outfit
 
-            Accostamento cromatico
+            * Accostamento cromatico
 
-            Originalità e stile personale
+            * Originalità e stile personale
 
-            Portamento e atteggiamento
+            * Portamento e atteggiamento
 
-            Cura del trucco (se presente)
+            * Cura del trucco (se presente)
 
-            Acconciatura
+            * Acconciatura
 
-            Manicure / Smalti
+            * Manicure / Smalti
 
-            Accessori (occhiali, gioielli, cinture, borse, ecc.)
+            * Accessori (occhiali, gioielli, cinture, borse, ecc.)
 
-            Coerenza generale dell’immagine
+            * Coerenza generale dell’immagine
 
             Altri fattori non elencati possono essere considerati rilevanti, a piena discrezione del giudice.
 
