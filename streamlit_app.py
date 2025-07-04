@@ -96,6 +96,22 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
+    # Toggle con emoji libro
+    show_rules = st.button("📖 Mostra Regolamento del Concorso")
+
+    if show_rules:
+        st.markdown("""
+        ### 📜 Regolamento del Concorso
+
+        1. Ogni partecipante può inviare una sola foto.
+        2. Le immagini devono essere originali e di proprietà dell’autore.
+        3. Il concorso si chiude il **30 settembre 2025**.
+        4. Le foto saranno valutate da una giuria qualificata.
+        5. I premi saranno assegnati entro 15 giorni dalla chiusura del concorso.
+        
+        Per maggiori dettagli, consulta il sito ufficiale.
+        """)
+
     top3 = load_top3()
     extra = load_extra()
     themes = load_themes()
