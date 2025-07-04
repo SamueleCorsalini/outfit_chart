@@ -118,12 +118,10 @@ def main():
     # === Classifica Ultimo Giorno === 
     today = datetime.date.today()
     yesterday = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    print(yesterday)
-    print(top3)
     show_top3(yesterday, top3)
 
     # === Classifica ===
-    st.header("Classifica Generale")
+    st.header("🏆 Classifica Generale")
     score_dict = defaultdict(int)
     for _, row in top3.iterrows():
         score_dict[row["Name1"]] += 25
@@ -135,8 +133,9 @@ def main():
     score_df = pd.DataFrame(score_dict.items(), columns=["Nome", "Punteggio"])
     score_df = score_df.sort_values("Punteggio", ascending=False).reset_index(drop=True)
 
-    for _, row in score_df.iterrows():
-        st.markdown(f"**{row['Nome']}**: {row['Punteggio']} punti")
+    for i, row in score_df.iterrows():
+        position = i + 1
+        st.markdown(f"**{position}. {row['Nome']}**: {row['Punteggio']} punti")
         st.progress(min(row['Punteggio'] / 500, 1.0), text=f"{row['Punteggio']} / 500 punti per il premio!")
 
     # === Storico top 3 ===
