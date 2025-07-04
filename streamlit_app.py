@@ -99,7 +99,9 @@ def main():
 
     modal = Modal("📖 Regolamento del Concorso", key="regolamento")
 
-    open_modal = st.button("Regolamento del Concorso", icon="📖", help= "Mostra regolamento")
+    _,c1= st.columns([5,1])
+
+    open_modal = c1.button("Regolamento del Concorso", icon="📖", help= "Mostra regolamento")
 
     if open_modal:
         modal.open()
@@ -107,7 +109,7 @@ def main():
     if modal.is_open():
         with modal.container():
             st.markdown("""
-            ### 📜 Regolamento
+            ### 
             
             1. Una foto per partecipante  
             2. Dev'essere originale  
