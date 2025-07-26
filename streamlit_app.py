@@ -97,7 +97,7 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
-    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=10)
+    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=10, max_width=700)
 
     _,c1= st.columns([3,1])
 
@@ -109,36 +109,58 @@ def main():
     if modal.is_open():
         with modal.container():
             st.markdown("""
-            <div style='height: 500px; overflow-y: auto; padding-right: 10px'>
-                <h2>1. Classifica Giornaliera</h2>
-                <p>Ogni giorno lavorativo viene stilata una classifica dei tre migliori outfit tra i colleghi presenti in ufficio.</p>
-                <ul>
-                    <li>🥇 1° posto: 25 punti</li>
-                    <li>🥈 2° posto: 20 punti</li>
-                    <li>🥉 3° posto: 15 punti</li>
-                </ul>
-                <p>La classifica viene definita a insindacabile giudizio di Francesca, che riveste il ruolo di giudice supremo unico e assoluto.</p>
-                <p>In caso di assenza di Francesca, Samuele C. assume in via eccezionale il ruolo di giudice. Tuttavia, Samuele non può in alcun caso attribuire punti a sé stesso.</p>
-                <p>Se entrambi i giudici sono assenti, la classifica giornaliera non viene stilata...</p>
-    
-                <h2>2. Punti Bonus</h2>
-                <p>Oltre ai punteggi della classifica giornaliera...</p>
-    
-                <h2>3. Criteri di Valutazione</h2>
-                <ul>
-                    <li>Scelta dei capi</li>
-                    <li>Coordinazione dell’outfit</li>
-                    <li>Accostamento cromatico</li>
-                    <li>Originalità e stile personale</li>
-                    <li>...</li>
-                </ul>
-    
-                <h2>4. Partecipazione</h2>
-                <p>Non è necessario alcun tipo di iscrizione formale...</p>
-    
-                <h2>5. Premio Finale</h2>
-                <p>Il primo concorrente che raggiungerà la soglia di 500 punti riceverà un premio esclusivo...</p>
-            </div>
+            ## 1. Classifica Giornaliera
+            Ogni giorno lavorativo viene stilata una classifica dei tre migliori outfit tra i colleghi presenti in ufficio.
+            I punteggi assegnati sono i seguenti:
+
+            🥇 1° posto: 25 punti
+
+            🥈 2° posto: 20 punti
+
+            🥉 3° posto: 15 punti
+
+            La classifica viene definita a insindacabile giudizio di Francesca, che riveste il ruolo di giudice supremo unico e assoluto.
+
+            In caso di assenza di Francesca, Samuele C. assume in via eccezionale il ruolo di giudice. Tuttavia, Samuele non può in alcun caso attribuire punti a sé stesso.
+
+            Se entrambi i giudici sono assenti dall’ufficio, la classifica giornaliera non viene stilata.
+            Anche in presenza dei giudici, la classifica può non essere assegnata, qualora si ritenga che nessun outfit sia meritevole di riconoscimento per quel giorno.
+
+            ## 2. Punti Bonus
+            Oltre ai punteggi della classifica giornaliera, il giudice può attribuire, a propria totale discrezione, dei punti bonus.
+            Tali punti possono essere assegnati per qualsiasi motivazione ritenuta valida dal giudice, e l'entità del bonus è variabile.
+
+            ## 3. Criteri di Valutazione
+            I giudizi si basano su una pluralità di elementi stilistici e di presentazione, tra cui:
+
+            * Scelta dei capi
+
+            * Coordinazione dell’outfit
+
+            * Accostamento cromatico
+
+            * Originalità e stile personale
+
+            * Portamento e atteggiamento
+
+            * Cura del trucco (se presente)
+
+            * Acconciatura
+
+            * Manicure / Smalti
+
+            * Accessori (occhiali, gioielli, cinture, borse, ecc.)
+
+            * Coerenza generale dell’immagine
+
+            Altri fattori non elencati possono essere considerati rilevanti, a piena discrezione del giudice.
+
+            ## 4. Partecipazione
+            Non è necessario alcun tipo di iscrizione formale per partecipare:
+            chiunque si presenti in ufficio con un outfit curato partecipa automaticamente al contest.
+
+            ## 5. Premio Finale
+            Il primo concorrente che raggiungerà la soglia di 500 punti riceverà un premio esclusivo e molto bello, messo in palio personalmente da Francesca.
             """,
             unsafe_allow_html=True)
 
