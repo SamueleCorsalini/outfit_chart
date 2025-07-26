@@ -218,12 +218,23 @@ def main():
 
         history = defaultdict(int)
         df_list = []
-        all_dates = pd.to_datetime(top3["Date"]).sort_values().unique()
+        all_dates = pd.date_range(start=min(pd.to_datetime(top3["Date"]).min(), pd.to_datetime(extra["Date"]).min()), 
+                              end=max(pd.to_datetime(top3["Date"]).max(), pd.to_datetime(extra["Date"]).max())).sort_values()
 
         for d in all_dates:
+            # Punteggi da top3
             day_df = top3[pd.to_datetime(top3["Date"]) == d]
-            for n, p in zip(["Name1", "Name2", "Name3"], [25, 20, 15]):
-                history[day_df.iloc[0][n]] += p
+            if not day_df.empty:
+                for n, p in zip(["Name1", "Name2", "Name3"], [25, 20, 15]):
+                    history[day_df.iloc[0][n]] += p
+
+            # Punteggi extra
+            extra_day_df = extra[pd.to_datetime(extra["Date"]) == d]
+            for _, row in extra_day_df.iterrows():
+                name = row["Name"]
+                points = row["Points"]
+                history[name] += points
+            
             for name in history:
                 df_list.append({"Date": d, "Name": name, "Score": history[name]})
 
