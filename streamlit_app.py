@@ -99,7 +99,7 @@ def main():
 
     _,c1= st.columns([3,1])
 
-    show_rules = c1.toggle("📖 Regolamento", key="toggle_rules", help="Mostra regolamento del concorso")
+    show_rules = c1.toggle("📖 Regolamento", key="toggle_rules", help="Mostra regolamento del concorso", width="stretch")
 
     if show_rules:
         with st.expander("📖 Regolamento del Concorso", expanded=True):
