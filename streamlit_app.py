@@ -7,6 +7,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from collections import defaultdict
 from streamlit_modal import Modal
+import streamlit.components.v1 as components
 
 # ==== Google Sheets Setup ====
 creds_dict = st.secrets["GOOGLE_SHEET_CREDS"]
@@ -97,7 +98,7 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
-    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=10, max_width=700)
+    modal = Modal("📖 Regolamento del Concorso", key="regolamento", padding=10)
 
     _,c1= st.columns([3,1])
 
@@ -108,6 +109,7 @@ def main():
 
     if modal.is_open():
         with modal.container():
+            st.write("prova")
             st.markdown("""
             ## 1. Classifica Giornaliera
             Ogni giorno lavorativo viene stilata una classifica dei tre migliori outfit tra i colleghi presenti in ufficio.
@@ -163,6 +165,7 @@ def main():
             Il primo concorrente che raggiungerà la soglia di 500 punti riceverà un premio esclusivo e molto bello, messo in palio personalmente da Francesca.
             """,
             unsafe_allow_html=True)
+            st.write("pare andare")
 
     top3 = load_top3()
     extra = load_extra()
