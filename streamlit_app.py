@@ -97,9 +97,9 @@ def assign_top3(date, first, second, third):
 def main():
     st.title("👔 Classifica Outfit 👗")
 
-    _,c1= st.columns([3,1])
+    _,c1= st.columns([2,1])
 
-    show_rules = c1.toggle("📖 Regolamento", key="toggle_rules", help="Mostra regolamento del concorso", width="stretch")
+    show_rules = c1.toggle("📖 Regolamento", key="toggle_rules", help="Mostra regolamento del concorso")
 
     if show_rules:
         with st.expander("📖 Regolamento del Concorso", expanded=True):
